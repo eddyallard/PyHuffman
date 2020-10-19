@@ -1,7 +1,7 @@
 from adt.dictionnary.BSTDictionnary import BSTDict
 from adt.list.SortedList import DescSortedList
-from model import HuffData
-from adt.tree import HuffTree
+from model.HuffData import HuffData
+from adt.tree.HuffTree import HuffTree
 
 
 class FileHelper:
@@ -34,13 +34,3 @@ class FileHelper:
             to_return.push(HuffData(popped.key, popped.value))
 
         return to_return
-
-
-fh = FileHelper("beenus.txt", "/home/eddy/Documents/Coding/PycharmProjects/PyHuffman/Project/dataset/")
-hufftree = HuffTree(fh.fetch_symbols())
-for i in iter(hufftree):
-    print(i)
-table = hufftree.get_huff_table()
-print(f"Code 1010 : {table['1010']}")
-print(table['011'])
-

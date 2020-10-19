@@ -1,6 +1,6 @@
 import ctypes
 
-from adt.list import IList
+from adt.list.IList import IList
 
 
 class ArrayList(IList):

@@ -1,4 +1,4 @@
-from adt.list import IList
+from adt.list.IList import IList
 
 
 class Node(object):
