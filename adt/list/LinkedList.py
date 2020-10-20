@@ -2,10 +2,10 @@ from adt.list.IList import IList
 
 
 class Node(object):
-    """ Node object for LinkedList
+    """ Noeud d'un LinkedList
         Args:
-            item(object): item to be stored
-            nextNode(Node): The next node in the list, can be None
+            item(object): l'item qui est storé dans le noeud
+            next_node(Node): Le noeud suivant le noeud courant
 
     """
     def __init__(self, item, next_node=None):
@@ -14,15 +14,30 @@ class Node(object):
 
 
 class LinkedList(IList):
-    """ Singly LinkedList implementation with two head"""
+    """ Implémentation à deux têtes d'une liste chaînée
+        Attributes:
+            head(Node): l'item qui est à la tête de la liste.
+            tail(Node): l'item qui est à la queue de la liste.
+    """
     def __init__(self):
         self.__head = None
         self.__tail = None
 
-    def __len__(self):
-        """ count all nodes in the list
+    def __getitem__(self, index):
+        """
+            Args:
+                index (int): Représente la positions à laquelle nous recherchons un élément dans la liste.
             Returns:
-                returns an integer representing the number of node in the list. Starts at 1, 0 means empty
+                L'élément à la position de l'index ou None si la case est vide.
+            Raises:
+                IndexError: Si l'index n'est pas à une position qui existe dans la liste.
+        """
+        return self.get(index)
+
+    def __len__(self):
+        """
+        Returns:
+            Le nombre d'éléments contenus dans la liste.
         """
         counter = 0
         node = self.__head
@@ -31,84 +46,99 @@ class LinkedList(IList):
             node = node.next_node
         return counter
 
-    def printer(self):
-        """Prints all elements of the list. For debugging purposes only"""
-        node = self.__head
-        while node is not None:
-            if node is self.__head:
-                print("i am the head : " + node.item + " My next node is " + node.nextNode.item)
-            elif node.nextNode is None:
-                print("i am the tail : " + node.item)
-            else:
-                print("i am " + node.item + " My next node is " + node.nextNode.item)
-            node = node.nextNode
+    def __setitem__(self, key, value):
+        """
+            Modifier la valeur d'un élément à une position spécifique dans la liste.
+            Args:
+                key (int): Représente la position où nous voulons mettre la valeur.
+                value : Représente l'item que nous voulons mettre à cette position.
+            Raises:
+                IndexError: Si l'index n'est pas à une position qui existe dans la liste.
+        """
+        if 0 > key or key > len(self):
+            raise IndexError
+        else:
+            self.put(value,key)
+        return
+
+    def __str__(self):
+        """
+            Returns:
+                Une chaîne de caractères qui représente toutes les valeurs contenues dans la liste.
+        """
+        string = "["  #: Premier caractère de la liste est un [
+        for i in iter(self):
+            string += f"{i}, "  #: Ajoute chaque item sauf le dernier suivi d'une virgule et d'un espace.
+        string = f"{string[:-2]}]"  #: Met une accolade fermente apres le dernier item.
+        return string
 
     def insert_at(self, item, index):
-        """ Insert an item at the specified index, preserving the previous index
+        """ Insére un item à un certain index de la liste.
             Args:
-                item (object): The item to be inserted in the list.
-                index (int): The location in the list where to insert the item
+                item (object): L'item qui sera inséré.
+                index (int): L'index auquel cet item sera inséré.
          """
         if not 0 <= index <= len(self):
             raise IndexError('Provided index is out of bounds')
 
-        previous_node = None
-        current_node = self.__head
+        previous_node = None    #: On garde le noeud précédent en mémoire car ça facilite les transformations sur le noeud courant.
+        current_node = self.__head  #: On commence à la tête.
 
-        if index == 0:
+        if index == 0:  #: Permet de modifier le head si l'index est 0.
             self.__head = Node(item, self.__head)
-            if self.__tail is None:
+            if self.__tail is None:     #: Initialiser la queue si ce n'est pas déjà fait.
                 self.__tail = self.__head
             return
-
+        #:  Cette partie du code s'éxécute si nous n'avions pas modifier la tête de la liste.
         counter = 0
 
-        while counter < index:
+        while counter < index:  #: On trouve le noeud à modifier en passant de parent à enfant.
             counter += 1
             previous_node = current_node
             current_node = current_node.next_node
 
-        previous_node.next_node= Node(item, current_node)
+        previous_node.next_node= Node(item, current_node)   #: On ajoute le nouveau noeud a la place du noeud courant et on met celui-ci comment enfant du nouveau noeud.
 
     def add_back(self, item):
-        """ Add an item to the head of the list
+        """ Ajoute un item à la queue de la liste
             Args:
-                item (object): The item to be inserted in the list.
+                item (object): L'item que nous insérons dans la liste.
         """
-        if self.__head is None:
+        if self.__head is None: #: Initialise la tête et la queue si la liste était vide.
             self.__head = Node(item)
             self.__tail = self.__head
             return
-        self.__tail.next_node = Node(item)
+        #: Cette partie du code s'éxécute si la liste n'était pas vide.
+        self.__tail.next_node = Node(item)  #: On ajoute un enfant à la queue et la queue devient cet enfant.
         self.__tail = self.__tail.next_node
         return
 
     def add_front(self, item):
-        """ Add an item to the tail of the list
+        """ Ajoute un item à la tête de la liste
             Args:
                 item (object): The item to be inserted in the list.
         """
-        self.insert_at(item, 0)
+        return self.insert_at(item, 0)
 
     def remove(self, index):
-        """ remove an item with the corresponding index
+        """ Retire un élément de la liste à un index donné.
             Args:
-                index (int): The location of the item to be removed
+                index (int): L'index de l'item a retiré.
             Returns:
-                returns the removed item
+                L'item qui a été retiré.
         """
         if not 0 <= index < self.length():
-            return IndexError('Provided index is out of bounds')
-        previous_node = None
+            raise IndexError('Index hors des limites de la liste.')
+        previous_node = None    #: On garde le noeud précédent en mémoire car ça facilite les transformations sur le noeud courant.
         current_node = self.__head
 
-        if index == 0:
+        if index == 0:  #: Si l'index est 0 on retire la tête
             to_return = self.__head.item
             self.__head = self.__head.next_node
             return to_return
-        
+        #: Ce code s'éxécute si l'index n'était pas 0
         counter = 0
-        
+        #: On trouve la position
         while counter < index:
             counter += 1
             previous_node = current_node
@@ -132,11 +162,13 @@ class LinkedList(IList):
         return self.remove(0)
 
     def get(self, index):
-        """ return the item specified at the index
-            Args:
-                index (int): The location of the item to return
-            Returns:
-                return the value item of the node matching the index provided
+        """
+        Args:
+            index (int): Représente la positions à laquelle nous recherchons un élément dans la liste.
+        Returns:
+            L'élément à la position de l'index ou None si la case est vide.
+        Raises:
+            IndexError: Si l'index n'est pas à une position qui existe dans la liste.
         """
         if not 0 <= index < self.length():
             return IndexError('Provided index is out of bounds')
@@ -208,4 +240,3 @@ class LinkedList(IList):
         while current_node is not None:
             yield current_node.item
             current_node = current_node.next_node
-
