@@ -21,20 +21,17 @@ class Encoder:
         huff_data = huff.get_huff_list()
         binary = ""
 
-        print(original_data)
         for symbol in original_data:
             for i in huff_data:
                 if i.symbol == symbol:
                     binary += i.binary
                     break
+
         header = self.header_helper(huff_data)
         header = bytearray(header, encoding="utf8")
         compressed_file.write(header)
         byte_array = self.binary_helper.make_byte_array(binary)
-        string = ""
-        for b in byte_array:
-            string += f" {str(b)}"
-        print(string)
+
         compressed_file.write(byte_array)
         compressed_file.close()
 
@@ -53,15 +50,13 @@ class Encoder:
     def decode(self):
         frequency, table, offset = self.fetch_header_from_file()
         compressed_file = open(self.path + self.filename + self.extension, "rb")
-        string = ""
+        data = bytearray()
         for symbol in compressed_file.read():
-            string += f" {str(symbol)}"
-        print(string)
-        compressed_data = string[offset:]
-        b = bytearray(bytes(compressed_data,encoding="utf8"))
-        b_helper = BinaryHelper()
-        uncompressed_data = b_helper.make_bits_string(b)
-
+            data.append(symbol)
+        data = data[offset:]
+        binary_helper = BinaryHelper()
+        uncompressed_data = binary_helper.make_bits_string(data)
+        return uncompressed_data
 
     def fetch_header_from_file(self):
         compressed_file = open(self.path + self.filename + self.extension, "r", errors="ignore")
