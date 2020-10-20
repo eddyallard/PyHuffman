@@ -103,8 +103,9 @@ class LinkedList(IList):
         current_node = self.__head
 
         if index == 0:
+            to_return = self.__head.item
             self.__head = self.__head.next_node
-            return
+            return to_return
         
         counter = 0
         
@@ -198,10 +199,9 @@ class LinkedList(IList):
             Returns:
                 return True if the list is empty or False if the list is not empty
         """
-        if len(self) == 0:
+        if self.__head is None:
             return True
-        else:
-            return False
+        return False
 
     def __iter__(self):
         current_node = self.__head

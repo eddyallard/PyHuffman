@@ -1,6 +1,6 @@
 from adt.HashTable import HashTable, HashEntry
 from adt.list import SortedList
-from adt.list.ArrayList import ArrayList
+from adt.list.LinkedList import LinkedList
 from adt.list.IList import IList
 from adt.queue.Queue import Queue
 from adt.tree.MinHeap import MinHeap
@@ -92,7 +92,7 @@ class HuffTree:
         Returns:
             Une liste de tout le huff data contenu dans le hufftree.
         """
-        huff_list = ArrayList()
+        huff_list = LinkedList()
         for data in iter(self):
             if data.symbol:
                 huff_list.add_back(data)

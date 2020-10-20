@@ -17,3 +17,4 @@ class Queue():
 
     def is_empty(self):
         return self.values.is_empty()
+

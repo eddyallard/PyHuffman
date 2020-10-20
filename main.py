@@ -1,4 +1,5 @@
 from service.Encoder import Encoder
 
-encode = Encoder("beenus","C:\\Users\\Bepix\\Desktop\\Nouveau dossier\\scr\\dataset\\")
+felix = "C:\\Users\\Bepix\\Desktop\\Nouveau dossier\\scr\\dataset\\"
+encode = Encoder("beenus", "/home/eddy/Documents/Coding/PycharmProjects/PyHuffman/dataset/")
 encode.encode()
