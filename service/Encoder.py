@@ -26,6 +26,7 @@ class Encoder:
                         break
             except (AttributeError, KeyError):
                 pass
+        header_helper(huff_data)
         byte_array = self.binary_helper.make_byte_array(binary)
         compressed_file.write(byte_array)
         compressed_file.close()
@@ -34,5 +35,14 @@ class Encoder:
     def decode(self):
         pass
 
-    def __convert_str_bin(self,array):
-        return int(array,2)
+    def header_helper(self,huff_data):
+        table = ""
+        start_symbol = None
+        for i in huff_data:
+            if i is not None:
+                table += i.symbol
+                start_symbol = i.symbol
+
+
+
+
