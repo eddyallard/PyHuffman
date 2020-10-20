@@ -1,3 +1,4 @@
+from adt.HashTable import HashTable
 from adt.list.ArrayList import ArrayList
 from adt.tree.HuffTree import HuffTree
 from model.HuffData import HuffData
@@ -55,14 +56,27 @@ class Encoder:
             data.append(symbol)
         data = data[offset:]
         binary_helper = BinaryHelper()
-        uncompressed_data = binary_helper.make_bits_string(data)
-        return uncompressed_data
+        binary_data = binary_helper.make_bits_string(data)
+        file_content = ""
+        current_binary = ""
+        char_count = 0
+        for i in range(len(binary_data)):
+            current_binary += binary_data[i]
+            try:
+                file_content += table[current_binary].symbol
+                current_binary = ""
+                char_count += 1
+            except KeyError:
+                pass
+            if char_count == frequency:
+                break
+        return file_content
 
     def fetch_header_from_file(self):
         compressed_file = open(self.path + self.filename + self.extension, "r", errors="ignore")
         start_flag = True
         end_char = ""
-        table = ArrayList()
+        table = HashTable()
         total_frequency = ""
         huffchar = ""
         huffbin = ""
@@ -79,9 +93,10 @@ class Encoder:
             elif symbol.isdigit():
                 huffbin += symbol
             elif symbol.isascii() and symbol.isdigit() is not True and symbol is not end_char:
-                table.add_back(HuffData(huffchar, None, huffbin))
+                table[huffbin] = HuffData(huffchar, None, huffbin)
                 huffchar = symbol
                 huffbin = ""
             elif symbol is end_char:
                 break
+        table[huffbin] = HuffData(huffchar, None, huffbin)
         return total_frequency, table, offset
