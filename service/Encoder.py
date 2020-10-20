@@ -16,9 +16,8 @@ class Encoder:
     def encode(self):
         file_helper = FileHelper(self.filename, self.path)
         huff = HuffTree(file_helper.fetch_symbols())
-        original_file = open(self.path + self.filename+".txt", "r")
-        compressed_file = open(self.path + self.filename + self.extension, "ab")
-        compressed_file_header = open(self.path + self.filename + self.extension, "w")
+        original_file = open(self.path + self.filename+".txt", "r",encoding="utf8")
+        compressed_file = open(self.path + self.filename + self.extension, "wb")
         huff_data = huff.get_huff_list()
         binary = ""
         for symbol in original_file.read():
@@ -30,9 +29,12 @@ class Encoder:
             except (AttributeError, KeyError):
                 pass
         header = self.header_helper(huff_data)
-        compressed_file_header.write(header)
-        compressed_file_header.close()
+        compressed_file.write(bytearray(header,encoding="utf8"))
         byte_array = self.binary_helper.make_byte_array(binary)
+        miaw = ""
+        for beet in byte_array:
+            miaw += " " + str(beet)
+        print(miaw)
         compressed_file.write(byte_array)
         compressed_file.close()
         original_file.close()
@@ -51,11 +53,22 @@ class Encoder:
 
     def decode(self):
         frequency, table,offset = self.fetch_header_from_file()
-
+        compressed_file = open(self.path + self.filename + self.extension, "rb")
+        compressed_data = ""
+        for symbol in compressed_file.read():
+            compressed_data += str(symbol)
+        compressed_data = compressed_data[offset:]
+        b = bytearray(bytes(compressed_data,encoding="utf8"))
+        b_helper = BinaryHelper()
+        uncompressed_data = b_helper.make_bits_string(b)
+        miaw = ""
+        for beet in b:
+            miaw += " " + str(beet)
+        print(miaw)
 
 
     def fetch_header_from_file(self):
-        compressed_file = open(self.path + self.filename + self.extension, "r", errors='ignore')
+        compressed_file = open(self.path + self.filename + self.extension, "r", errors="ignore")
         start_flag = True
         end_char = ""
         table = ArrayList()
@@ -65,7 +78,6 @@ class Encoder:
         offset = 0
         for symbol in compressed_file.read():
             offset += 1
-            print("benis")
             if symbol.isdigit() and start_flag:
                 total_frequency += symbol
             elif symbol.isascii() and symbol.isdigit() is not True and start_flag:
@@ -81,6 +93,4 @@ class Encoder:
                 huffbin = ""
             elif symbol is end_char:
                 break
-        print(total_frequency)
-
         return total_frequency, table, offset
