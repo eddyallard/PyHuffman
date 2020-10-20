@@ -16,28 +16,27 @@ class Encoder:
     def encode(self):
         file_helper = FileHelper(self.filename, self.path)
         huff = HuffTree(file_helper.fetch_symbols())
-        original_file = open(self.path + self.filename+".txt", "r",encoding="utf8")
+        original_data = file_helper.get_contents()
         compressed_file = open(self.path + self.filename + self.extension, "wb")
         huff_data = huff.get_huff_list()
         binary = ""
-        for symbol in original_file.read():
-            try:
-                for i in huff_data:
-                    if i.symbol == symbol:
-                        binary += i.binary
-                        break
-            except (AttributeError, KeyError):
-                pass
+
+        print(original_data)
+        for symbol in original_data:
+            for i in huff_data:
+                if i.symbol == symbol:
+                    binary += i.binary
+                    break
         header = self.header_helper(huff_data)
-        compressed_file.write(bytearray(header,encoding="utf8"))
+        header = bytearray(header, encoding="utf8")
+        compressed_file.write(header)
         byte_array = self.binary_helper.make_byte_array(binary)
-        miaw = ""
-        for beet in byte_array:
-            miaw += " " + str(beet)
-        print(miaw)
+        string = ""
+        for b in byte_array:
+            string += f" {str(b)}"
+        print(string)
         compressed_file.write(byte_array)
         compressed_file.close()
-        original_file.close()
 
     def header_helper(self, huff_data):
         table = ""
@@ -52,19 +51,16 @@ class Encoder:
         return table
 
     def decode(self):
-        frequency, table,offset = self.fetch_header_from_file()
+        frequency, table, offset = self.fetch_header_from_file()
         compressed_file = open(self.path + self.filename + self.extension, "rb")
-        compressed_data = ""
+        string = ""
         for symbol in compressed_file.read():
-            compressed_data += str(symbol)
-        compressed_data = compressed_data[offset:]
+            string += f" {str(symbol)}"
+        print(string)
+        compressed_data = string[offset:]
         b = bytearray(bytes(compressed_data,encoding="utf8"))
         b_helper = BinaryHelper()
         uncompressed_data = b_helper.make_bits_string(b)
-        miaw = ""
-        for beet in b:
-            miaw += " " + str(beet)
-        print(miaw)
 
 
     def fetch_header_from_file(self):
