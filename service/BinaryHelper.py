@@ -1,4 +1,4 @@
-from adt.list.ArrayList import ArrayList
+from adt.list.LinkedList import LinkedList
 
 
 class BinaryHelper:
@@ -18,7 +18,7 @@ class BinaryHelper:
             Un array de bytes.
         """
         pos = 0     #: Les string ne peuvent pas être modifié alors je l'indexe.
-        byte_array = ArrayList()    #:  Array pour stocker tous mes bytes.
+        byte_array = LinkedList()    #:  Array pour stocker tous mes bytes.
         while pos < len(bits):  #: Aussi longtemps que je n'ai pas parcouru le string au complet.
             count = 8   #: On commence toujours à 8 car 8bits per byte.
             byte = 0    #: Valeur du byte courant.
