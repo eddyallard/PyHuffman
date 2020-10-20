@@ -33,7 +33,7 @@ class ArrayList(IList):
         Raises:
             IndexError: Si l'index n'est pas à une position qui existe dans la liste.
         """
-        if 0 > index or index > self.length:
+        if 0 > index or index >= self.length:
             raise IndexError
         try:
             return self.values[index]
@@ -75,7 +75,7 @@ class ArrayList(IList):
         Returns:
             Un tableau de la taille "capacity"
         """
-        return (capacity * ctypes.py_object)()
+        return [None] * capacity
 
     def _grow(self):
         """
@@ -84,7 +84,7 @@ class ArrayList(IList):
         if len(self) == self.capacity:  #: Si le tableau est plein, recréer un tableau avec 100 cases de plus.
             self.capacity += 100
             new_array = ArrayList._build_array(self.capacity)
-            for i in range(len(self)-1):
+            for i in range(len(self)):
                 new_array[i] = self.values[i]
             self.values = new_array
         self.length += 1    #: Augmenter la taille de la liste de 1.
@@ -99,12 +99,12 @@ class ArrayList(IList):
         Raises:
             IndexError: Si l'index n'est pas à une position qui existe dans la liste.
         """
+        self._grow()  #: Augmente la taille de la liste car nous allons insérer un item.
         if 0 > index or index > len(self):
             raise IndexError
         else:
             old_value = self[index]  #: Sauvegarde la valeur à la position "index"
             self[index] = item   #: Donne la nouvelle valeur à la position "index"
-            self._grow()   #: Augmente la taille de la liste car nous allons tout bouger.
             for i in range(index + 1, len(self)):  #: Parcours la liste à partir de la valeur après l'index et bouge les valeurs vers la droite.
                 tmp = self[i]
                 self[i] = old_value
@@ -218,3 +218,7 @@ class ArrayList(IList):
         if len(self) == 0:
             return True
         return False
+
+    def __iter__(self):
+        for i in range(len(self)-1):
+            yield self[i]

@@ -1,4 +1,5 @@
 from adt.HashTable import HashTable, HashEntry
+from adt.list.ArrayList import ArrayList
 from adt.list.IList import IList
 from adt.queue.Queue import Queue
 from adt.tree.MinHeap import MinHeap
@@ -84,6 +85,18 @@ class HuffTree:
                 huff_table[data.binary] = data
         return huff_table
 
+    def get_huff_list(self):
+        """
+        Permet de générer une liste avec le huffdata contenu dans notre hufftree
+
+        Returns:
+            Une liste de tout le huff data contenu dans le hufftree.
+        """
+        huff_list = ArrayList()
+        for data in iter(self):
+            if data.symbol:
+                huff_list.add_back(data)
+        return huff_list
 
     def __iter__(self):
         """
