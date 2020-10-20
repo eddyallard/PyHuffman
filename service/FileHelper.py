@@ -1,7 +1,7 @@
 from adt.dictionnary.BSTDictionnary import BSTDict
 from adt.list.SortedList import DescSortedList
 from model.HuffData import HuffData
-from adt.tree.HuffTree import HuffTree
+from adt.tree.HuffTree import HuffTree, HuffNode
 
 
 class FileHelper:
@@ -31,6 +31,6 @@ class FileHelper:
 
         while symbol_count.root:    #: On vide le BSTDict dans la liste ordonnée pour faciliter les opérations futures.
             popped = symbol_count.pop_leftmost()
-            to_return.push(HuffData(popped.key, popped.value))
+            to_return.push(HuffNode(popped.key, popped.value))
 
         return to_return

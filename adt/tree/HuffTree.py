@@ -1,4 +1,5 @@
 from adt.HashTable import HashTable, HashEntry
+from adt.list import SortedList
 from adt.list.ArrayList import ArrayList
 from adt.list.IList import IList
 from adt.queue.Queue import Queue
@@ -36,7 +37,7 @@ class HuffTree:
     """
     Implementation de l'arbre de huffman qui transformeras une Liste de HuffData en un hufftree.
     """
-    def __init__(self, data: IList):
+    def __init__(self, data: SortedList):
         self.root = self.__huffify(data)
 
     def __build_min_heap(self, data: IList):
@@ -53,7 +54,7 @@ class HuffTree:
             minheap.insert(new_node)  #: Nous ajoutons ce nouveau noeud à l'arbre.
         return minheap
 
-    def __huffify(self, data: IList):
+    def __huffify(self, data: SortedList):
         """
         Transformer une liste de donnée en hufftree
 
@@ -64,9 +65,9 @@ class HuffTree:
             La racine du HuffTree.
         """
         minheap = self.__build_min_heap(data)   #: On commence par créer un minheap avec les données qui ont été fournies.
-        while len(minheap) > 1:     #: On construit un huff tree donc aussi longtemps qu'il y a plus d'un noeud, on combien les 2 plus petits noeuds dans un noeud qui n'a pas de valeur et qui a la sommme de leur fréquence comme clé.
-            first_node = minheap.remove()
-            second_node = minheap.remove()
+        while len(data) > 1:     #: On construit un huff tree donc aussi longtemps qu'il y a plus d'un noeud, on combien les 2 plus petits noeuds dans un noeud qui n'a pas de valeur et qui a la sommme de leur fréquence comme clé.
+            first_node = data.remove_back()
+            second_node = data.remove_back()
             combined_frequency = first_node.key + second_node.key
             new_node = HuffNode(None, combined_frequency, first_node, second_node)
             minheap.insert(new_node)
