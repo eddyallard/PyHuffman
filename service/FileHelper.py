@@ -20,7 +20,7 @@ class FileHelper:
         """
         symbol_count = BSTDict()    #: Le comptage initial des symbols se fait dans un BSTDict, car il nous permet de chercher et de modifier des entrées en un temps O(log N) à O(n) dépendament du balancement de l'arbre.
         to_return = DescSortedList()    #: Les symboles et leur nombre d'occurence est ensuite mis dans une liste ordonnée ce qui facilitera les opérations futures.
-        path = self.folder + self.filename
+        path = self.folder + self.filename + ".txt"
         file = open(path)     #: Maintenant nous lisons le fichier au path fournit.
         for symbol in file.read():  #: On évalue chaque symbole.
             try:    #: On incrémente la valeur(nb d'occurences) du symbole de 1.
