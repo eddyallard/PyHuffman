@@ -7,7 +7,7 @@ class Queue():
     Implémentation partielle d'un queue en utilisant un array list.
     """
     def __init__(self):
-        self.values = ArrayList()
+        self.values = LinkedList()
 
     def push(self, value):
         return self.values.add_back(value)

@@ -8,9 +8,9 @@ class Node(object):
             nextNode(Node): The next node in the list, can be None
 
     """
-    def __init__(self, item, nextNode=None):
+    def __init__(self, item, next_node=None):
         self.item = item
-        self.nextNode = nextNode
+        self.next_node = next_node
 
 
 class LinkedList(IList):
@@ -26,9 +26,9 @@ class LinkedList(IList):
         """
         counter = 0
         node = self.__head
-        while node is not None:
+        while node:
             counter += 1
-            node = node.nextNode
+            node = node.next_node
         return counter
 
     def printer(self):
@@ -49,20 +49,28 @@ class LinkedList(IList):
                 item (object): The item to be inserted in the list.
                 index (int): The location in the list where to insert the item
          """
-        if not 0 <= index < self.length():
-            return IndexError('Provided index is out of bounds')
-        previousNode = None
-        node = self.__head
-        counter = 0
-        while counter is not index:
-            counter += 1
-            previousNode = node
-            node = node.nextNode
-        if counter is index:
-            previousNode.nextNode = Node(item)
-            previousNode.nextNode.nextNode = node
+        if not 0 <= index <= len(self):
+            raise IndexError('Provided index is out of bounds')
 
-    def add_front(self, item):
+        previous_node = None
+        current_node = self.__head
+
+        if index == 0:
+            self.__head = Node(item, self.__head)
+            if self.__tail is None:
+                self.__tail = self.__head
+            return
+
+        counter = 0
+
+        while counter < index:
+            counter += 1
+            previous_node = current_node
+            current_node = current_node.next_node
+
+        previous_node.next_node= Node(item, current_node)
+
+    def add_back(self, item):
         """ Add an item to the head of the list
             Args:
                 item (object): The item to be inserted in the list.
@@ -70,18 +78,17 @@ class LinkedList(IList):
         if self.__head is None:
             self.__head = Node(item)
             self.__tail = self.__head
-        else:
-            self.__tail.nextNode = Node(item)
-            self.__tail = self.__tail.nextNode
+            return
+        self.__tail.next_node = Node(item)
+        self.__tail = self.__tail.next_node
+        return
 
-    def add_back(self, item):
+    def add_front(self, item):
         """ Add an item to the tail of the list
             Args:
                 item (object): The item to be inserted in the list.
         """
-        new_head = Node(item)
-        new_head.nextNode = self.__head
-        self.__head = new_head
+        self.insert_at(item, 0)
 
     def remove(self, index):
         """ remove an item with the corresponding index
@@ -92,46 +99,36 @@ class LinkedList(IList):
         """
         if not 0 <= index < self.length():
             return IndexError('Provided index is out of bounds')
+        previous_node = None
+        current_node = self.__head
+
+        if index == 0:
+            self.__head = self.__head.next_node
+            return
+        
         counter = 0
-        previousNode = None
-        node = self.__head
-        while counter is not index:
+        
+        while counter < index:
             counter += 1
-            previousNode = node
-            node = node.nextNode
-        to_return = previousNode.nextNode
-        previousNode.nextNode = node.nextNode
+            previous_node = current_node
+            current_node = current_node.next_node
+        to_return = current_node
+        previous_node.next_node = None
         return to_return.item
 
-    def remove_front(self):
+    def remove_back(self):
         """ remove the head of the list
             Returns:
                 return the removed head
         """
-        to_return = self.__head
-        self.__head = self.__head.nextNode
-        return to_return.item
+        return self.remove(len(self)-1)
 
-    def remove_back(self):
+    def remove_front(self):
         """remove the tail of the list
             Returns:
                 return the removed tail
         """
-        previousNode = None
-        node = self.__head
-        while node is not self.__tail:
-            previousNode = node
-            node = node.nextNode
-        if previousNode is None:
-            to_return = self.__tail
-            self.__tail = None
-            self.__head = None
-            return to_return.item
-        else:
-            to_return = previousNode.nextNode
-            previousNode.nextNode = None
-            self.__tail = previousNode
-            return to_return.item
+        return self.remove(0)
 
     def get(self, index):
         """ return the item specified at the index
@@ -143,11 +140,11 @@ class LinkedList(IList):
         if not 0 <= index < self.length():
             return IndexError('Provided index is out of bounds')
         counter = 0
-        node = self.__head
-        while counter is not index:
+        current_node = self.__head
+        while counter < index:
             counter += 1
-            node = node.nextNode
-        return node.item
+            current_node = current_node.next_node
+        return current_node.item
 
     def put(self, item, index):
         """ change the value of the item at the index provided
@@ -158,11 +155,11 @@ class LinkedList(IList):
         if not 0 <= index < self.length():
             return IndexError('Provided index is out of bounds')
         counter = 0
-        node = self.__head
+        current_node = self.__head
         while counter is not index:
             counter += 1
-            node = node.nextNode
-        node.item = item
+            current_node = current_node.next_node
+        current_node.item = item
 
     def find(self, item):
         """ Tries to find the index for the corresponding item
@@ -171,13 +168,13 @@ class LinkedList(IList):
             Returns:
                 returns the index of the item in the list. If the item does not exist return -1
         """
-        node = self.__head
+        current_node = self.__head
         counter = 0
-        while node is not None:
-            if node.item is item:
+        while current_node is not None:
+            if current_node.item is item:
                 return counter
             counter += 1
-            node = node.nextNode
+            current_node = current_node.next_node
         return -1
 
     def concat(self, other):
@@ -185,36 +182,30 @@ class LinkedList(IList):
             Args:
                 other (LinkedList): the other list to be added to self
         """
-        self.__tail.nextNode = other.get_head()
-        self.__tail = other.get_tail()
-
-    def get_head(self):
-        """
-            Returns:
-                return the head of the list
-        """
-        return self.__head
-
-    def get_tail(self):
-        """
-            Returns:
-                return the tail of the list
-        """
-        return self.__tail
+        for i in other:
+            self.add_back(i)
+        return
 
     def length(self):
         """
             Returns:
                 return the length via __len__ of the list
         """
-        return self.__len__()
+        return len(self)
 
     def is_empty(self):
         """
             Returns:
                 return True if the list is empty or False if the list is not empty
         """
-        if self.__len__() == 0:
+        if len(self) == 0:
             return True
         else:
             return False
+
+    def __iter__(self):
+        current_node = self.__head
+        while current_node is not None:
+            yield current_node.item
+            current_node = current_node.next_node
+
