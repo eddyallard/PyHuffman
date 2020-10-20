@@ -64,14 +64,13 @@ class HuffTree:
         Returns:
             La racine du HuffTree.
         """
-        minheap = self.__build_min_heap(data)   #: On commence par créer un minheap avec les données qui ont été fournies.
         while len(data) > 1:     #: On construit un huff tree donc aussi longtemps qu'il y a plus d'un noeud, on combien les 2 plus petits noeuds dans un noeud qui n'a pas de valeur et qui a la sommme de leur fréquence comme clé.
             first_node = data.remove_back()
             second_node = data.remove_back()
             combined_frequency = first_node.key + second_node.key
             new_node = HuffNode(None, combined_frequency, first_node, second_node)
-            minheap.insert(new_node)
-        return minheap.peek()
+            data.push(new_node)
+        return data[0]
 
     def get_huff_table(self):
         """
