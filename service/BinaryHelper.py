@@ -28,5 +28,5 @@ class BinaryHelper:
                 count -= 1
                 if current_bit == '1':
                     byte += 2 ** count
-            byte_array.add_back(byte)   #:  J'ajoute les byte à la fin toujours, car je veux qu'ils soient en ordre de lecture.
+            byte_array.add_back(byte)   #:  J'ajoute les byte à la fin toujours, car je veux qu'ils soient en ordre de lecture.git st
         return bytearray(byte_array)
