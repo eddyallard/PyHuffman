@@ -68,7 +68,7 @@ class Encoder:
                 char_count += 1
             except KeyError:
                 pass
-            if char_count == frequency:
+            if char_count is (int(frequency)):
                 break
         return file_content
 
