@@ -1,4 +1,5 @@
 from adt.list.LinkedList import LinkedList
+from adt.stack.Stack import Stack
 
 
 class BinaryHelper:
@@ -8,7 +9,7 @@ class BinaryHelper:
     def __init__(self):
         pass
 
-    def make_byte_array(self, bits):
+    def make_byte_array(self, bits: str):
         """
         Méthode qui converti des des bits en plusieurs bytes.
         Args:
@@ -30,3 +31,24 @@ class BinaryHelper:
                     byte += 2 ** count
             byte_array.add_back(byte)   #:  J'ajoute les byte à la fin toujours, car je veux qu'ils soient en ordre de lecture.git st
         return bytearray(byte_array)
+
+    def make_bits_string(self, byte_array: bytearray):
+        """
+        Une méthode qui converti un bytearray en un string de code binaire.
+        Args:
+            byte_array: le bytearray que nous voulons convertir.
+
+        Returns:
+            Un string de code binaire basé sur le bytearray.
+        """
+        bit_string = "" #:  Initialisation du string de bits que nous allons renvoyer
+        for byte in byte_array:
+            current_byte = Stack()  #: On utilise un stack car on calcule le binaire en faisant les modulos, cela nous donne la réponse à l'envers.
+            cnt = 0
+            while cnt < 8:
+                current_byte.push(f"{byte%2}")
+                byte = byte //2
+                cnt += 1
+            while not current_byte.is_empty():
+                bit_string += current_byte.pop()
+        return bit_string
