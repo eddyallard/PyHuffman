@@ -1,4 +1,4 @@
-class HuffData(object):
+class HuffData:
     def __init__(self, symbol, frequency, binary=None):
         self.symbol = symbol
         self.frequency = frequency

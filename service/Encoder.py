@@ -1,5 +1,5 @@
 from adt.dictionnary.HashTable import HashTable
-from adt.tree.HuffTree import HuffTree
+from model.HuffTree import HuffTree
 from model.HuffData import HuffData
 from service.BinaryHelper import BinaryHelper
 from service.FileHelper import FileHelper

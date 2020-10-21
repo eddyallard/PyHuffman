@@ -56,7 +56,7 @@ class HashTable(object):
             table[i] = None
         return table
 
-    def is_free(entry):
+    def is_free(self, entry):
         """
         Permet l'initialisation de la table
             Args:
@@ -68,7 +68,7 @@ class HashTable(object):
             return True
         return False
 
-    def hash(key):
+    def hash(self, key):
         """
         Permet le hashage des clés. Dans notre cas, comme nous savons que les clés seront un code binaire,
         notre méthode de hachage ne fait que transposer le string de code binaire en décimal. De cette façon nous
@@ -127,6 +127,7 @@ class HashTable(object):
         """
         index = self.hash(key)
         for i in range(index, self.__capacity - 1, 1):
-            if self.__table[i].key == key:
-                return self.__table[i].item
+            if self.__table[i]:
+                if self.__table[i].key == key:
+                    return self.__table[i].item
         raise KeyError(f"Pas de clée {key}.")

@@ -3,7 +3,7 @@ from adt.list import SortedList
 from adt.list.LinkedList import LinkedList
 from adt.list.IList import IList
 from adt.queue.Queue import Queue
-from adt.tree.MinHeap import MinHeap
+from unused.MinHeap import MinHeap
 from model.HuffData import HuffData
 
 
@@ -64,7 +64,7 @@ class HuffTree:
         Returns:
             La racine du HuffTree.
         """
-        while len(data) > 1:     #: On construit un huff tree donc aussi longtemps qu'il y a plus d'un noeud, on combien les 2 plus petits noeuds dans un noeud qui n'a pas de valeur et qui a la sommme de leur fréquence comme clé.
+        while len(data) > 1:     #: On construit un huff tree donc aussi longtemps qu'il y a plus d'un noeud, on combine les 2 plus petits noeuds dans un noeud qui n'a pas de valeur et qui a la sommme de leur fréquence comme clé.
             first_node = data.remove_back()
             second_node = data.remove_back()
             combined_frequency = first_node.key + second_node.key

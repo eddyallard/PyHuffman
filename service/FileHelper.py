@@ -1,7 +1,6 @@
 from adt.dictionnary.BSTDictionnary import BSTDict
 from adt.list.SortedList import DescSortedList
-from model.HuffData import HuffData
-from adt.tree.HuffTree import HuffTree, HuffNode
+from model.HuffTree import HuffNode
 
 
 class FileHelper:
