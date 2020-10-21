@@ -138,7 +138,7 @@ class LinkedList(IList):
             return to_return
         #: Ce code s'éxécute si l'index n'était pas 0
         counter = 0
-        #: On trouve la position
+        #: On trouve la position et on la remplace par son prochain noeud.
         while counter < index:
             counter += 1
             previous_node = current_node
@@ -148,16 +148,16 @@ class LinkedList(IList):
         return to_return.item
 
     def remove_back(self):
-        """ remove the head of the list
+        """ Retire la queue de la liste
             Returns:
-                return the removed head
+                Retourne la valeur qui a été retirée.
         """
         return self.remove(len(self)-1)
 
     def remove_front(self):
-        """remove the tail of the list
+        """Retire la tête de la liste
             Returns:
-                return the removed tail
+                Retourne la valeur qui a été retirée.
         """
         return self.remove(0)
 
@@ -174,32 +174,35 @@ class LinkedList(IList):
             return IndexError('Provided index is out of bounds')
         counter = 0
         current_node = self.__head
+        #: On trouve le noeud et on le renvoit.
         while counter < index:
             counter += 1
             current_node = current_node.next_node
         return current_node.item
 
     def put(self, item, index):
-        """ change the value of the item at the index provided
+        """ Remplacer un item dans la liste par un nouvel item.
             Args:
-                item (object): The item to be added in the list.
-                index (int): The location of the item to be changed
+                item (object): Le nouvel item.
+                index (int): L'index de l'item que nous voulons remplacer.
         """
         if not 0 <= index < self.length():
             return IndexError('Provided index is out of bounds')
         counter = 0
         current_node = self.__head
+        #: On trouve l'item et on change sa valeur.
         while counter is not index:
             counter += 1
             current_node = current_node.next_node
         current_node.item = item
+        return
 
     def find(self, item):
-        """ Tries to find the index for the corresponding item
+        """ Trouver l'index de la première occurence d'un item.
             Args:
-                item (object): The item to be inserted in the list.
+                item (object): L'item qu'on veut trouver dans la liste..
             Returns:
-                returns the index of the item in the list. If the item does not exist return -1
+                Retourne l'index de l'item que nous cherchons ou -1 si on ne le trouve pas.
         """
         current_node = self.__head
         counter = 0
@@ -211,9 +214,9 @@ class LinkedList(IList):
         return -1
 
     def concat(self, other):
-        """ concatenate two linkedList that are not None
+        """ Permet de concaténer une autre liste à celle-ci.
             Args:
-                other (LinkedList): the other list to be added to self
+                other (IList): L'autre liste qui sera ajoutée.
         """
         for i in other:
             self.add_back(i)
@@ -222,20 +225,25 @@ class LinkedList(IList):
     def length(self):
         """
             Returns:
-                return the length via __len__ of the list
+                La longueure de la liste.
         """
         return len(self)
 
     def is_empty(self):
         """
             Returns:
-                return True if the list is empty or False if the list is not empty
+                True si la liste est vide, False sinon.
         """
         if self.__head is None:
             return True
         return False
 
     def __iter__(self):
+        """
+        Permet d'itérer au travers de notre liste.
+        Yields:
+            Chaque valeur en ordre, de notre linked list.
+        """
         current_node = self.__head
         while current_node is not None:
             yield current_node.item
