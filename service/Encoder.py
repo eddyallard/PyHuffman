@@ -38,19 +38,6 @@ class Encoder:
         compressed_file.close()
         self.unpack_file()
 
-    def header_helper(self, huff_data):
-        table = ""
-        counter = 0
-        for i in huff_data:
-            if i is not None:
-                table += "@"
-                table += i.symbol
-                table += i.binary
-                counter += i.frequency
-        table += table[1]
-        table = str(counter) + table
-        return table
-
     def header_serialiser(self, huff_data):
         serialized = ""
         for data in huff_data:
@@ -124,6 +111,20 @@ class Encoder:
             except KeyError:
                 pass
         return file_content
+
+    #: Le code en dessous est pas utilisé nulpart.
+    def header_helper(self, huff_data):
+        table = ""
+        counter = 0
+        for i in huff_data:
+            if i is not None:
+                table += "@"
+                table += i.symbol
+                table += i.binary
+                counter += i.frequency
+        table += table[1]
+        table = str(counter) + table
+        return table
 
     def fetch_header_from_file(self):
         compressed_file = open(self.path + self.filename + self.extension, "r", errors="ignore")
