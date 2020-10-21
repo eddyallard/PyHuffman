@@ -28,13 +28,15 @@ class Encoder:
                     binary += i.binary
                     break
 
-        header = self.header_helper(huff_data)
+        #header = self.header_helper(huff_data)
+        header = self.header_serialiser(huff_data)
         header = bytearray(header, encoding="utf8")
         compressed_file.write(header)
         byte_array = self.binary_helper.make_byte_array(binary)
 
         compressed_file.write(byte_array)
         compressed_file.close()
+        self.unpack_file()
 
     def header_helper(self, huff_data):
         table = ""
@@ -49,28 +51,78 @@ class Encoder:
         table = str(counter) + table
         return table
 
-    def decode(self):
-        frequency, table, offset = self.fetch_header_from_file()
+    def header_serialiser(self, huff_data):
+        serialized = ""
+        for data in huff_data:
+            serialized += "/"
+            serialized += data.symbol
+            serialized += "/"
+            serialized += data.binary
+            serialized += "/"
+            serialized += str(data.frequency)
+        serialized = str(len(serialized)) + serialized + "/"
+        return serialized
+
+    def unpack_file(self):
         compressed_file = open(self.path + self.filename + self.extension, "rb")
+
+        current = ""
+        header_size = 0
+        header_start= False
+
+        symbol, frequency, binary = ["",0 ,""]
+        position = 0  # 0 = symbol, 1 = binary, 2 = frequency
+
+        hufftable = HashTable()
         data = bytearray()
-        for symbol in compressed_file.read():
-            data.append(symbol)
-        data = data[offset:]
+        for char in compressed_file.read():
+            if not header_start:
+                if chr(char) == "/":
+                    header_size = int(current)
+                    header_start = True
+                    current = ""
+                else:
+                    current += chr(char)
+            elif header_size > 0:
+                if chr(char) == "/":
+                    if position == 0:
+                        symbol = current
+                        position += 1
+                    elif position == 1:
+                        binary = current
+                        position += 1
+                    else:
+                        frequency = int(current)
+                        hufftable[binary] = HuffData(symbol, frequency, binary)
+                        symbol, frequency, binary = ["", 0, ""]
+                        position = 0
+                    current = ""
+                else:
+                    current += chr(char)
+                header_size -= 1
+            else:
+                data.append(char)
+        compressed_file.close()
+        return hufftable, data
+
+    def decode(self):
+        hufftable, data = self.unpack_file()
         binary_helper = BinaryHelper()
         binary_data = binary_helper.make_bits_string(data)
         file_content = ""
         current_binary = ""
-        char_count = 0
-        for i in range(len(binary_data)):
-            current_binary += binary_data[i]
+        for bit in binary_data:
+            current_binary += bit
             try:
-                file_content += table[current_binary].symbol
-                current_binary = ""
-                char_count += 1
+                huffdata = hufftable[current_binary]
+                if huffdata.frequency > 0:
+                    file_content += huffdata.symbol
+                    huffdata.frequency -= 1
+                    current_binary = ""
+                else:
+                    break
             except KeyError:
                 pass
-            if char_count is (int(frequency)):
-                break
         return file_content
 
     def fetch_header_from_file(self):
