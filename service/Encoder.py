@@ -1,8 +1,6 @@
-from adt.HashTable import HashTable
-from adt.list.ArrayList import ArrayList
+from adt.dictionnary.HashTable import HashTable
 from adt.tree.HuffTree import HuffTree
 from model.HuffData import HuffData
-from model.HuffTable import HuffTable
 from service.BinaryHelper import BinaryHelper
 from service.FileHelper import FileHelper
 
@@ -28,7 +26,6 @@ class Encoder:
                     binary += i.binary
                     break
 
-        #header = self.header_helper(huff_data)
         header = self.header_serialiser(huff_data)
         header = bytearray(header, encoding="utf8")
         compressed_file.write(header)

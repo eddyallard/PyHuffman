@@ -1,4 +1,4 @@
-from adt.HashTable import HashTable, HashEntry
+from adt.dictionnary.HashTable import HashTable
 from adt.list import SortedList
 from adt.list.LinkedList import LinkedList
 from adt.list.IList import IList
