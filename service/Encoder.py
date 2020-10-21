@@ -41,10 +41,11 @@ class Encoder:
         counter = 0
         for i in huff_data:
             if i is not None:
+                table += "@"
                 table += i.symbol
                 table += i.binary
                 counter += i.frequency
-        table += table[0]
+        table += table[1]
         table = str(counter) + table
         return table
 
@@ -81,22 +82,29 @@ class Encoder:
         huffchar = ""
         huffbin = ""
         offset = 0
-        for symbol in compressed_file.read():
+        while True:
+            symbol = compressed_file.read(1)
             offset += 1
-            if symbol.isdigit() and start_flag:
+            if symbol == "":
+                break
+            elif symbol.isdigit() and start_flag:
                 total_frequency += symbol
-            elif symbol.isascii() and symbol.isdigit() is not True and start_flag:
-                end_char += symbol
+            elif symbol.isascii() and start_flag:
+                symbol = compressed_file.read(1)
+                offset +=1
                 huffchar = symbol
                 end_char = symbol
                 start_flag = False
             elif symbol.isdigit():
                 huffbin += symbol
-            elif symbol.isascii() and symbol.isdigit() is not True and symbol is not end_char:
+            elif symbol.isascii() and symbol.isdigit() is not True:
+                if symbol is end_char:
+                    break
+                symbol = compressed_file.read(1)
+                offset += 1
                 table[huffbin] = HuffData(huffchar, None, huffbin)
-                huffchar = symbol
+                print(huffchar +" "+ huffbin)
                 huffbin = ""
-            elif symbol is end_char:
-                break
-        table[huffbin] = HuffData(huffchar, None, huffbin)
+                huffchar = symbol
         return total_frequency, table, offset
+
