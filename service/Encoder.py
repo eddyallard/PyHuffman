@@ -16,7 +16,7 @@ class Encoder:
         file_helper = FileHelper(self.filename, self.path)
         huff = HuffTree(file_helper.fetch_symbols())
         original_data = file_helper.get_contents()
-        compressed_file = open(self.path + self.filename + self.extension, "wb")
+        # compressed_file = open(self.path + self.filename + self.extension, "wb")
         huff_data = huff.get_huff_list()
         binary = ""
 
@@ -28,11 +28,11 @@ class Encoder:
 
         header = self.header_serialiser(huff_data)
         header = bytearray(header, encoding="utf8")
-        compressed_file.write(header)
+        # compressed_file.write(header)
         byte_array = self.binary_helper.make_byte_array(binary)
-
-        compressed_file.write(byte_array)
-        compressed_file.close()
+        file_helper.write_binary(header + byte_array,self.path,self.filename,self.extension)
+        # compressed_file.write(byte_array)
+        # compressed_file.close()
         self.unpack_file()
 
     def header_serialiser(self, huff_data):
@@ -107,6 +107,9 @@ class Encoder:
                     break
             except KeyError:
                 pass
+        uncompressed_file = open(self.path + self.filename + ".txt", "w")
+        uncompressed_file.write(file_content)
+        uncompressed_file.close()
         return file_content
 
     #: Le code en dessous est pas utilisé nulpart.

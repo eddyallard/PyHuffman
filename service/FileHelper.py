@@ -7,6 +7,7 @@ class FileHelper:
     """
     Classe permettant de lire et d'écrire des fichiers.
     """
+
     def __init__(self, filename: str, folder: str):
         self.filename = filename
         self.folder = folder
@@ -17,18 +18,18 @@ class FileHelper:
         Returns:
             SortedList comportant le HuffData associé au fichié qui a été lu.
         """
-        symbol_count = BSTDict()    #: Le comptage initial des symbols se fait dans un BSTDict, car il nous permet de chercher et de modifier des entrées en un temps O(log N) à O(n) dépendament du balancement de l'arbre.
-        to_return = DescSortedList()    #: Les symboles et leur nombre d'occurence est ensuite mis dans une liste ordonnée ce qui facilitera les opérations futures.
+        symbol_count = BSTDict()  #: Le comptage initial des symbols se fait dans un BSTDict, car il nous permet de chercher et de modifier des entrées en un temps O(log N) à O(n) dépendament du balancement de l'arbre.
+        to_return = DescSortedList()  #: Les symboles et leur nombre d'occurence est ensuite mis dans une liste ordonnée ce qui facilitera les opérations futures.
         path = self.folder + self.filename + ".txt"
-        file = open(path, encoding="utf8")     #: Maintenant nous lisons le fichier au path fournit.
+        file = open(path, encoding="utf8")  #: Maintenant nous lisons le fichier au path fournit.
         for symbol in file.read():  #: On évalue chaque symbole.
-            try:    #: On incrémente la valeur(nb d'occurences) du symbole de 1.
+            try:  #: On incrémente la valeur(nb d'occurences) du symbole de 1.
                 symbol_count[symbol] += 1
             except (AttributeError, KeyError):  #: S'il n'existe pas, ces erreur sont levées alors on l'initialise.
                 symbol_count[symbol] = 1
         file.close()
 
-        while symbol_count.root:    #: On vide le BSTDict dans la liste ordonnée pour faciliter les opérations futures.
+        while symbol_count.root:  #: On vide le BSTDict dans la liste ordonnée pour faciliter les opérations futures.
             popped = symbol_count.pop_leftmost()
             to_return.push(HuffNode(popped.key, popped.value))
 
@@ -42,3 +43,15 @@ class FileHelper:
             to_return += symbol
         file.close()
         return to_return
+
+    def write_binary(self, content, path, filename, extension):
+        path = path + filename + extension
+        file = open(path, "wb")
+        file.write(content)
+        file.close()
+
+    def read_binary(self, path, filename, extension):
+        path = path + filename + extension
+        file = open (path,"rb")
+        content = file.read()
+        return content
