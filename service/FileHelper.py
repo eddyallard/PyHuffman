@@ -44,8 +44,8 @@ class FileHelper:
         file.close()
         return to_return
 
-    def write_binary(self, content, path, filename, extension):
-        path = path + filename + extension
+    def write_binary(self, content, extension):
+        path = self.folder + self.filename +extension
         file = open(path, "wb")
         file.write(content)
         file.close()
@@ -55,3 +55,7 @@ class FileHelper:
         file = open (path,"rb")
         content = file.read()
         return content
+    def write_text(self, content, path, filename, extension):
+        uncompressed_file = open(path + filename + extension, "w")
+        uncompressed_file.write(content)
+        uncompressed_file.close()

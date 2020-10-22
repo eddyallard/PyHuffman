@@ -30,10 +30,10 @@ class Encoder:
         header = bytearray(header, encoding="utf8")
         # compressed_file.write(header)
         byte_array = self.binary_helper.make_byte_array(binary)
-        file_helper.write_binary(header + byte_array,self.path,self.filename,self.extension)
+        file_helper.write_binary(header + byte_array,self.extension)
         # compressed_file.write(byte_array)
         # compressed_file.close()
-        self.unpack_file()
+        # self.unpack_file() why is this here ???
 
     def header_serialiser(self, huff_data):
         serialized = ""
@@ -48,6 +48,7 @@ class Encoder:
         return serialized
 
     def unpack_file(self):
+        # to put in filehelper maybe??
         compressed_file = open(self.path + self.filename + self.extension, "rb")
 
         current = ""
@@ -90,6 +91,7 @@ class Encoder:
         return hufftable, data
 
     def decode(self):
+        file_helper = FileHelper(self.filename,self.path)
         hufftable, data = self.unpack_file()
         binary_helper = BinaryHelper()
         binary_data = binary_helper.make_bits_string(data)
@@ -107,57 +109,5 @@ class Encoder:
                     break
             except KeyError:
                 pass
-        uncompressed_file = open(self.path + self.filename + ".txt", "w")
-        uncompressed_file.write(file_content)
-        uncompressed_file.close()
+        file_helper.write_text(file_content, self.path,self.filename, ".txt")
         return file_content
-
-    #: Le code en dessous est pas utilisé nulpart.
-    def header_helper(self, huff_data):
-        table = ""
-        counter = 0
-        for i in huff_data:
-            if i is not None:
-                table += "@"
-                table += i.symbol
-                table += i.binary
-                counter += i.frequency
-        table += table[1]
-        table = str(counter) + table
-        return table
-
-    def fetch_header_from_file(self):
-        compressed_file = open(self.path + self.filename + self.extension, "r", errors="ignore")
-        start_flag = True
-        end_char = ""
-        table = HashTable()
-        total_frequency = ""
-        huffchar = ""
-        huffbin = ""
-        offset = 0
-        while True:
-            symbol = compressed_file.read(1)
-            offset += 1
-            if symbol == "":
-                break
-            elif symbol.isdigit() and start_flag:
-                total_frequency += symbol
-            elif symbol.isascii() and start_flag:
-                symbol = compressed_file.read(1)
-                offset +=1
-                huffchar = symbol
-                end_char = symbol
-                start_flag = False
-            elif symbol.isdigit():
-                huffbin += symbol
-            elif symbol.isascii() and symbol.isdigit() is not True:
-                if symbol is end_char:
-                    break
-                symbol = compressed_file.read(1)
-                offset += 1
-                table[huffbin] = HuffData(huffchar, None, huffbin)
-                print(huffchar +" "+ huffbin)
-                huffbin = ""
-                huffchar = symbol
-        return total_frequency, table, offset
-
