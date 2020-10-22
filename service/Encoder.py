@@ -47,52 +47,9 @@ class Encoder:
         serialized = str(len(serialized)) + serialized + "/"
         return serialized
 
-    def unpack_file(self):
-        # to put in filehelper maybe??
-        compressed_file = open(self.path + self.filename + self.extension, "rb")
-
-        current = ""
-        header_size = 0
-        header_start= False
-
-        symbol, frequency, binary = ["",0 ,""]
-        position = 0  # 0 = symbol, 1 = binary, 2 = frequency
-
-        hufftable = HashTable()
-        data = bytearray()
-        for char in compressed_file.read():
-            if not header_start:
-                if chr(char) == "/":
-                    header_size = int(current)
-                    header_start = True
-                    current = ""
-                else:
-                    current += chr(char)
-            elif header_size > 0:
-                if chr(char) == "/":
-                    if position == 0:
-                        symbol = current
-                        position += 1
-                    elif position == 1:
-                        binary = current
-                        position += 1
-                    else:
-                        frequency = int(current)
-                        hufftable[binary] = HuffData(symbol, frequency, binary)
-                        symbol, frequency, binary = ["", 0, ""]
-                        position = 0
-                    current = ""
-                else:
-                    current += chr(char)
-                header_size -= 1
-            else:
-                data.append(char)
-        compressed_file.close()
-        return hufftable, data
-
     def decode(self):
         file_helper = FileHelper(self.filename,self.path)
-        hufftable, data = self.unpack_file()
+        hufftable, data = file_helper.unpack_file(self.extension)
         binary_helper = BinaryHelper()
         binary_data = binary_helper.make_bits_string(data)
         file_content = ""
@@ -109,5 +66,5 @@ class Encoder:
                     break
             except KeyError:
                 pass
-        file_helper.write_text(file_content, self.path,self.filename, ".txt")
+        file_helper.write_text(file_content, ".txt")
         return file_content

@@ -1,5 +1,7 @@
 from adt.dictionnary.BSTDictionnary import BSTDict
+from adt.dictionnary.HashTable import HashTable
 from adt.list.SortedList import DescSortedList
+from model.HuffData import HuffData
 from model.HuffTree import HuffNode
 
 
@@ -50,12 +52,50 @@ class FileHelper:
         file.write(content)
         file.close()
 
-    def read_binary(self, path, filename, extension):
-        path = path + filename + extension
-        file = open (path,"rb")
-        content = file.read()
-        return content
-    def write_text(self, content, path, filename, extension):
-        uncompressed_file = open(path + filename + extension, "w")
-        uncompressed_file.write(content)
-        uncompressed_file.close()
+    def write_text(self, content, extension):
+        path = self.folder + self.filename + extension
+        file = open(path, "w")
+        file.write(content)
+        file.close()
+
+    def unpack_file(self,extension):
+        compressed_file = open(self.folder + self.filename + extension, "rb")
+
+        current = ""
+        header_size = 0
+        header_start= False
+
+        symbol, frequency, binary = ["",0 ,""]
+        position = 0  # 0 = symbol, 1 = binary, 2 = frequency
+
+        hufftable = HashTable()
+        data = bytearray()
+        for char in compressed_file.read():
+            if not header_start:
+                if chr(char) == "/":
+                    header_size = int(current)
+                    header_start = True
+                    current = ""
+                else:
+                    current += chr(char)
+            elif header_size > 0:
+                if chr(char) == "/":
+                    if position == 0:
+                        symbol = current
+                        position += 1
+                    elif position == 1:
+                        binary = current
+                        position += 1
+                    else:
+                        frequency = int(current)
+                        hufftable[binary] = HuffData(symbol, frequency, binary)
+                        symbol, frequency, binary = ["", 0, ""]
+                        position = 0
+                    current = ""
+                else:
+                    current += chr(char)
+                header_size -= 1
+            else:
+                data.append(char)
+        compressed_file.close()
+        return hufftable, data
