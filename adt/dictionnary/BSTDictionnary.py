@@ -1,3 +1,6 @@
+from adt.list.ArrayList import ArrayList
+
+
 class Entry:
     """
     Une entrée du dictionnaire.
@@ -161,5 +164,27 @@ class BSTDict:
         else:  #: Autrement le noeud est la racine alors on modifie tout simplement la valeur de celle-ci directement.
             self.root = new_node_value
         return to_return
+
+    def inorder(self):
+        """
+        Parcours l'arbre en ordre croissant.
+
+        Retourne: Les noeuds en ordre sous forme de liste
+        """
+        return self.__inorder(self.root, ArrayList())
+
+    def __inorder(self, node, data: ArrayList()):
+        """
+        Parcours l'arbre en ordre croissant.
+
+        Retourne: Les noeuds en ordre sous forme de liste
+        """
+        if node:
+            self.__inorder(node.left_child, data)
+            data.add_back(node.entry)
+            self.__inorder(node.right_child, data)
+        return data
+
+
 
 

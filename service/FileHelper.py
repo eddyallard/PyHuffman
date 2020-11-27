@@ -1,7 +1,7 @@
 from adt.dictionnary.BSTDictionnary import BSTDict
-from adt.dictionnary.HashTable import HashTable
 from adt.list.SortedList import DescSortedList
 from model.HuffData import HuffData
+from model.HuffTable import HuffTable
 from model.HuffTree import HuffNode
 
 
@@ -31,13 +31,13 @@ class FileHelper:
                 symbol_count[symbol] = 1
         file.close()
 
-        while symbol_count.root:  #: On vide le BSTDict dans la liste ordonnée pour faciliter les opérations futures.
-            popped = symbol_count.pop_leftmost()
-            to_return.push(HuffNode(popped.key, popped.value))
+        for entry in symbol_count.inorder():  #:    On ordonne notre char count de façon descendante pour la construction du hufftree.
+            to_return.push(HuffNode(entry.key, entry.value))
 
         return to_return
 
     def get_contents(self):
+        #:  Lit un fichier et renvoie le contenu sous forme d'un string.
         to_return = ""
         path = self.folder + self.filename + ".txt"
         file = open(path, encoding="utf8")
@@ -47,18 +47,21 @@ class FileHelper:
         return to_return
 
     def write_binary(self, content, extension):
+        #:  Écrit en utf8 dans un fichier à partir d'un bytearray.
         path = self.folder + self.filename +extension
         file = open(path, "wb")
         file.write(content)
         file.close()
 
     def write_text(self, content, extension):
+        #:  Écrit du texte dans un fichier.
         path = self.folder + self.filename + extension
         file = open(path, "w")
         file.write(content)
         file.close()
 
     def unpack_file(self,extension):
+        #:  Permet de recréer un hufftable a partir d'un fichier compressé et d'en séparer les données.
         compressed_file = open(self.folder + self.filename + extension, "rb")
 
         current = ""
@@ -68,7 +71,7 @@ class FileHelper:
         symbol, frequency, binary = ["",0 ,""]
         position = 0  # 0 = symbol, 1 = binary, 2 = frequency
 
-        hufftable = HashTable()
+        hufftable = HuffTable()
         data = bytearray()
         for char in compressed_file.read():
             if not header_start:

@@ -1,8 +1,8 @@
-from adt.dictionnary.HashTable import HashTable
 from adt.list import SortedList
 from adt.list.LinkedList import LinkedList
 from adt.list.IList import IList
 from adt.queue.Queue import Queue
+from model.HuffTable import HuffTable
 from unused.MinHeap import MinHeap
 from model.HuffData import HuffData
 
@@ -79,7 +79,7 @@ class HuffTree:
         Returns:
             Un HashTable qui a été construit avec notre HuffTree et qui a pour clée le code binaire de notre HuffData.
         """
-        huff_table = HashTable()
+        huff_table = HuffTable()
         for data in iter(self):
             if data.symbol:
                 huff_table[data.binary] = data
@@ -101,6 +101,7 @@ class HuffTree:
     def __iter__(self):
         """
         Permet de parcourir et de renvoyer chaque noeud de l'arbre sous forme HuffData dans un ordre Breadth First.
+        Cet méthode permet aussi d'assigner les valeurs binaires à nos nodes.
         Yields:
              Every HuffNode of the HuffTree containing a char in a breadth first order as HuffData.
         """
