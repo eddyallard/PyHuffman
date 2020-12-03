@@ -130,3 +130,4 @@ class FileHelper:
                     except KeyError:
                         pass
         compressed_file.close()
+        decompressed_file.close()
