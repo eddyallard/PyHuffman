@@ -18,22 +18,21 @@ class Encoder:
         file_helper = FileHelper(self.filename, self.path)
         #:  On passe notre algo de huffman sur le tree.
         huff = HuffTree(file_helper.fetch_symbols())
-        original_data = file_helper.get_contents()
         huff_data = huff.get_huff_list()
-        #:  On créée une représentation binaire sous forme de string de notre fichier compressé.
-        binary = ""
-        for symbol in original_data:
-            for i in huff_data:
-                if i.symbol == symbol:
-                    binary += i.binary
-                    break
-        #:  On sérialise le header pour pouvoir décoder notre fichier plus tard.
+        #:  On sérialise le header et on l'écrit dans notre fichier.
         header = self.header_serialiser(huff_data)
         header = bytearray(header, encoding="utf8")
-        #:  On transforme notre représentation binaire en char utf8.
-        byte_array = self.binary_helper.make_byte_array(binary)
-        #:  On écrit le tout dans notre fichier compressé.
-        file_helper.write_binary(header + byte_array,self.extension)
+        file_helper.write_bytes(header)
+        #:  On écrit bit par bit dans notre fichier comnpressé
+        for symbol in file_helper.get_contents():
+            for i in huff_data:
+                if i.symbol == symbol:
+                    for bit in i.binary:
+                        file_helper.write_bit(bit)
+                    break
+        #: On écrit les derniers bits en ajoutant des 0 pour avoir un byte.
+        while len(file_helper.buffer) != 0:
+            file_helper.write_bit('0')
 
     def header_serialiser(self, huff_data):
         #: Permet de sérialiser notre huff data sous la forme /a/011/567/.

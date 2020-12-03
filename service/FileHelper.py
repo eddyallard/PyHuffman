@@ -1,8 +1,10 @@
 from adt.dictionnary.BSTDictionnary import BSTDict
+from adt.list.ArrayList import ArrayList
 from adt.list.SortedList import DescSortedList
 from model.HuffData import HuffData
 from model.HuffTable import HuffTable
 from model.HuffTree import HuffNode
+from service.BinaryHelper import BinaryHelper
 
 
 class FileHelper:
@@ -13,6 +15,8 @@ class FileHelper:
     def __init__(self, filename: str, folder: str):
         self.filename = filename
         self.folder = folder
+        self.buffer = ArrayList()
+        self.binary_helper = BinaryHelper()
 
     def fetch_symbols(self):
         """
@@ -30,28 +34,36 @@ class FileHelper:
             except (AttributeError, KeyError):  #: S'il n'existe pas, ces erreur sont levées alors on l'initialise.
                 symbol_count[symbol] = 1
         file.close()
-
         for entry in symbol_count.inorder():  #:    On ordonne notre char count de façon descendante pour la construction du hufftree.
             to_return.push(HuffNode(entry.key, entry.value))
-
         return to_return
 
     def get_contents(self):
-        #:  Lit un fichier et renvoie le contenu sous forme d'un string.
-        to_return = ""
+        #:  Lit un fichier et renvoie le contenu au fur et à mesure sous forme d'un string.
         path = self.folder + self.filename + ".txt"
         file = open(path, encoding="utf8")
         for symbol in file.read():
-            to_return += symbol
+            yield symbol
         file.close()
-        return to_return
 
-    def write_binary(self, content, extension):
+    def write_bytes(self, content):
+        extension = '.pluspetit'
         #:  Écrit en utf8 dans un fichier à partir d'un bytearray.
-        path = self.folder + self.filename +extension
+        path = self.folder + self.filename + extension
         file = open(path, "wb")
         file.write(content)
         file.close()
+
+    def write_bit(self, content):
+        extension = '.pluspetit'
+        #:  Écrit en utf8 dans un fichier à partir d'un bytearray.
+        self.buffer.add_back(content)
+        if len(self.buffer) == 8:
+            path = self.folder + self.filename + extension
+            file = open(path, "ab")
+            file.write(bytes([self.binary_helper.to_int(self.buffer)]))
+            self.buffer.clear()
+            file.close()
 
     def write_text(self, content, extension):
         #:  Écrit du texte dans un fichier.

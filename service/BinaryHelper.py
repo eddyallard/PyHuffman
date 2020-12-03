@@ -1,3 +1,4 @@
+from adt.list.ArrayList import ArrayList
 from adt.list.LinkedList import LinkedList
 from adt.stack.Stack import Stack
 
@@ -31,6 +32,12 @@ class BinaryHelper:
                     byte += 2 ** count
             byte_array.add_back(byte)   #:  J'ajoute les byte à la fin toujours, car je veux qu'ils soient en ordre de lecture.git st
         return bytearray(byte_array)
+
+    def to_int(self, bits: ArrayList):
+        value = 0
+        for i in range(len(bits)):
+            value += (int(bits[i]) * (2 ** (7-i)))
+        return value
 
     def make_bits_string(self, byte_array: bytearray):
         """

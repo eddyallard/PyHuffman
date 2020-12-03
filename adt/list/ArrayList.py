@@ -219,6 +219,12 @@ class ArrayList(IList):
             return True
         return False
 
+    def clear(self):
+        """
+        Vide la liste.
+        """
+        self.length = 0
+
     def __iter__(self):
-        for i in range(len(self)-1):
+        for i in range(len(self)):
             yield self[i]

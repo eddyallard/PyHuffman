@@ -179,7 +179,7 @@ class BSTDict:
 
         Retourne: Les noeuds en ordre sous forme de liste
         """
-        if node:
+        if node is not None:
             self.__inorder(node.left_child, data)
             data.add_back(node.entry)
             self.__inorder(node.right_child, data)
