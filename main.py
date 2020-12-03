@@ -25,11 +25,10 @@ def Main():
         encode.encode()
         print ("Encoding was successful!")
     else:
-        print(filename)
-        print(path)
+        print(f'{path}/{filename}')
         encode = Encoder(filename, path)
         print("Decoding...")
-        print(encode.decode())
+        encode.decode()
         print("Decoding was successful!")
 
 

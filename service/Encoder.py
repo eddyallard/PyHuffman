@@ -50,25 +50,5 @@ class Encoder:
     def decode(self):
         #:  Utilisation de filehelper pour lire/écrire dans les fichiers.
         file_helper = FileHelper(self.filename,self.path)
-        #:  Division de notre hufftable et de notre string de data.
-        hufftable, data = file_helper.unpack_file(self.extension)
-        #:  Binary helper pour transforme notre string de data en une représentation binaire.
-        binary_helper = BinaryHelper()
-        binary_data = binary_helper.make_bits_string(data)
-        #:  On traverse la représentation binaire pour recréer le texte original.
-        file_content = ""
-        current_binary = ""
-        for bit in binary_data:
-            current_binary += bit
-            try:
-                huffdata = hufftable[current_binary]
-                if huffdata.frequency > 0:
-                    file_content += huffdata.symbol
-                    huffdata.frequency -= 1
-                    current_binary = ""
-                else:
-                    break
-            except KeyError:
-                pass
-        file_helper.write_text(file_content, ".txt")
-        return file_content
+        #:  Décompression du fichier, tout se fait dans la methode unpack_file par soucis d'efficacité.
+        file_helper.unpack_file()

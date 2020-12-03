@@ -17,6 +17,8 @@ class FileHelper:
         self.folder = folder
         self.buffer = ArrayList()
         self.binary_helper = BinaryHelper()
+        self.compressed_extension = '.pluspetit'
+        self.decompressed_extension = '.txt'
 
     def fetch_symbols(self):
         """
@@ -40,26 +42,24 @@ class FileHelper:
 
     def get_contents(self):
         #:  Lit un fichier et renvoie le contenu au fur et à mesure sous forme d'un string.
-        path = self.folder + self.filename + ".txt"
+        path = self.folder + self.filename + self.decompressed_extension
         file = open(path, encoding="utf8")
         for symbol in file.read():
             yield symbol
         file.close()
 
     def write_bytes(self, content):
-        extension = '.pluspetit'
         #:  Écrit en utf8 dans un fichier à partir d'un bytearray.
-        path = self.folder + self.filename + extension
+        path = self.folder + self.filename + self.compressed_extension
         file = open(path, "wb")
         file.write(content)
         file.close()
 
     def write_bit(self, content):
-        extension = '.pluspetit'
         #:  Écrit en utf8 dans un fichier à partir d'un bytearray.
         self.buffer.add_back(content)
         if len(self.buffer) == 8:
-            path = self.folder + self.filename + extension
+            path = self.folder + self.filename + self.compressed_extension
             file = open(path, "ab")
             file.write(bytes([self.binary_helper.to_int(self.buffer)]))
             self.buffer.clear()
@@ -72,11 +72,14 @@ class FileHelper:
         file.write(content)
         file.close()
 
-    def unpack_file(self,extension):
+    def unpack_file(self):
         #:  Permet de recréer un hufftable a partir d'un fichier compressé et d'en séparer les données.
-        compressed_file = open(self.folder + self.filename + extension, "rb")
-
-        current = ""
+        compressed_file = open(self.folder + self.filename + self.compressed_extension, "rb")
+        #:  On vide le fichier décompressé si il existe, ensuite on l'ouvre pour pouvoir ajouter à mesure qu'on lit
+        open(self.folder + self.filename + self.decompressed_extension, "w").close()
+        decompressed_file = open(self.folder + self.filename + self.decompressed_extension, "a")
+        current = ''
+        key_len = 0
         header_size = 0
         header_start= False
 
@@ -84,8 +87,8 @@ class FileHelper:
         position = 0  # 0 = symbol, 1 = binary, 2 = frequency
 
         hufftable = HuffTable()
-        data = bytearray()
         for char in compressed_file.read():
+            #: La première section permet d'aller chercher la table de huffman
             if not header_start:
                 if chr(char) == "/":
                     header_size = int(current)
@@ -110,7 +113,20 @@ class FileHelper:
                 else:
                     current += chr(char)
                 header_size -= 1
+            #: La deuxième section permet de réécrire un fichier txt
             else:
-                data.append(char)
+                current += self.binary_helper.to_bits(char)
+                while key_len < len(current):
+                    key_len += 1
+                    try:
+                        huffdata = hufftable[current[:key_len]]
+                        if huffdata.frequency > 0:
+                            decompressed_file.write(huffdata.symbol)
+                            huffdata.frequency -= 1
+                            current = current[key_len:]
+                            key_len = 0
+                        else:
+                            break
+                    except KeyError:
+                        pass
         compressed_file.close()
-        return hufftable, data
