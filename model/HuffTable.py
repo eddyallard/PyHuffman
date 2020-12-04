@@ -24,7 +24,7 @@ class HuffTable:
         """
 
     def __init__(self,
-                 capacity=256):  #: Tableau de taille 256, car nous ne l'utilisons que pour le huffdata et comme nous sommes en utf8, il y a 256 valeurs possibles.
+                 capacity=500):  #: Grande taille pour éviter des problèmes
         self.__capacity = capacity
         self.__table = self.__initialise_array(capacity)
         self.size = 0
