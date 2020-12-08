@@ -3,7 +3,6 @@ from adt.list.LinkedList import LinkedList
 from adt.list.IList import IList
 from adt.queue.Queue import Queue
 from model.HuffTable import HuffTable
-from unused.MinHeap import MinHeap
 from model.HuffData import HuffData
 
 
